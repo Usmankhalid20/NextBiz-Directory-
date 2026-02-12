@@ -23,20 +23,36 @@ export async function POST(req) {
         .pipe(csv())
         .on('data', (data) => {
             // Map CSV columns to Schema fields
-            // Assuming CSV headers match or are close. We'll try to be robust.
             const business = {
                 placeId: data['Place ID'] || data['placeId'],
                 businessName: data['Business Name'] || data['businessName'],
+                description: data['Description'] || data['description'] || '',
                 address: data['Address'] || data['address'],
-                phone: data['Phone Number'] || data['phone'],
+                city: data['City'] || data['city'] || '',
+                state: data['State'] || data['state'] || '',
+                zip: data['Zip'] || data['zip'] || '',
+                phone: data['Phone Number'] || data['phone'] || '',
 
-                website: data['Website'] || data['website'],
-
-
+                website: data['Website'] || data['website'] || '',
                 category: data['Category'] || data['category'],
+                rating: parseFloat(data['Rating'] || data['rating'] || 0),
+                reviewCount: parseInt(data['Review Count'] || data['reviewCount'] || 0),
                 isOpenNow: (data['Is Open Now'] || data['isOpenNow'])?.toLowerCase() === 'yes' || (data['Is Open Now'] || data['isOpenNow']) === 'true',
+                // Handle lat/lng if available, otherwise default to 0,0
+                location: {
+                    type: 'Point',
+                    coordinates: [
+                        parseFloat(data['Longitude'] || data['longitude'] || 0),
+                        parseFloat(data['Latitude'] || data['latitude'] || 0)
+                    ]
+                },
+                images: data['Images'] ? data['Images'].split(',').map(img => img.trim()) : [],
+                tags: data['Tags'] ? data['Tags'].split(',').map(tag => tag.trim()) : [],
             };
-            results.push(business);
+             // Basic validation to skip empty rows
+            if (business.placeId || (business.businessName && business.address)) {
+                results.push(business);
+            }
         })
         .on('end', resolve)
         .on('error', reject);
@@ -45,9 +61,10 @@ export async function POST(req) {
     await connectToDatabase();
 
     // Insert or update
+    // Insert or update
     const operations = results.map((business) => ({
       updateOne: {
-        filter: { placeId: business.placeId },
+        filter: { placeId: business.placeId }, // Use placeId as unique identifier
         update: { $set: business },
         upsert: true,
       },
