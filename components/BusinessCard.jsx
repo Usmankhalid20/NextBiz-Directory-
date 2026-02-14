@@ -1,16 +1,69 @@
-import { MapPin, Phone, Globe, Star, ArrowRight } from 'lucide-react';
+import { MapPin, Phone, Globe, Star, ArrowRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+import { useState } from 'react';
 
 export default function BusinessCard({ business }) {
   const rating = business.rating || 0;
   const reviewCount = business.reviewCount || 0;
+  const { user } = useAuth();
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async (e) => {
+    e.preventDefault(); 
+    
+    const isSoftDelete = user?.role !== 'admin';
+    const message = isSoftDelete 
+        ? 'Remove this business from your list?' 
+        : 'Are you sure you want to PERMANENTLY delete this business? This cannot be undone.';
+
+    if (!confirm(message)) return;
+
+    setIsDeleting(true);
+    try {
+        const url = isSoftDelete 
+            ? `/api/businesses/${business._id}/soft-delete`
+            : `/api/businesses/${business._id}`;
+        
+        const method = isSoftDelete ? 'PATCH' : 'DELETE';
+
+        const res = await fetch(url, { method });
+        const data = await res.json();
+        
+        if (res.ok) {
+            window.location.reload(); 
+        } else {
+            alert(data.message || 'Failed to delete');
+        }
+    } catch {
+        alert('An error occurred');
+    } finally {
+        setIsDeleting(false);
+    }
+  };
+
+  if (!business) return null; // Safety check
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full group">
+    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full group relative">
+      {user && (
+          <button 
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className={`absolute top-2 right-2 z-10 p-2 rounded-full transition-colors ${
+                user.role === 'admin' 
+                ? 'bg-red-100 text-red-600 hover:bg-red-200' // Admin: Hard Delete
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200' // User: Soft Delete
+            }`}
+            title={user.role === 'admin' ? "Permanently Delete" : "Remove from list"}
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+      )}
       <div className="p-5 flex-grow">
         <div className="flex justify-between items-start mb-3">
           <div>
-            <h3 className="text-lg font-bold text-gray-800 line-clamp-1 group-hover:text-blue-600 transition-colors">
+            <h3 className="text-lg font-bold text-gray-800 line-clamp-1 group-hover:text-blue-600 transition-colors pr-8">
               {business.businessName}
             </h3>
             <p className="text-xs text-gray-500 font-medium px-2 py-0.5 bg-gray-100 rounded-full inline-block mt-1">

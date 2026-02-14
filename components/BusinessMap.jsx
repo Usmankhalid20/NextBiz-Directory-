@@ -4,7 +4,6 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Star } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect } from 'react';
 
 // Fix for default marker icon in Next.js
 const DefaultIcon = L.icon({

@@ -1,7 +1,54 @@
-import { MapPin, Phone, Star, ArrowRight } from 'lucide-react';
+import { MapPin, Phone, Star, ArrowRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+import { useState } from 'react';
 
 export default function BusinessTable({ businesses }) {
+  const { user } = useAuth();
+  const [actionId, setActionId] = useState(null);
+
+  const handleDelete = async (id, e) => {
+    e.preventDefault();
+    if (!confirm('Are you sure you want to PERMANENTLY delete this business?')) return;
+
+    setActionId(id);
+    try {
+        const res = await fetch(`/api/businesses/${id}`, {
+            method: 'DELETE',
+        });
+        const data = await res.json();
+        if (data.success) {
+            window.location.reload(); 
+        } else {
+            alert(data.message);
+        }
+    } catch {
+        alert('Failed to delete');
+    } finally {
+        setActionId(null);
+    }
+  };
+
+  const handleRestore = async (id, e) => {
+    e.preventDefault();
+    setActionId(id);
+    try {
+        const res = await fetch(`/api/businesses/${id}/restore`, {
+            method: 'PATCH',
+        });
+        const data = await res.json();
+        if (data.success) {
+            window.location.reload(); 
+        } else {
+            alert(data.message);
+        }
+    } catch {
+        alert('Failed to restore');
+    } finally {
+        setActionId(null);
+    }
+  };
+
   return (
     <div className="overflow-x-auto bg-white rounded-lg shadow border border-gray-200">
       <table className="min-w-full divide-y divide-gray-200">
@@ -17,11 +64,14 @@ export default function BusinessTable({ businesses }) {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {businesses.map((business) => (
-            <tr key={business._id} className="hover:bg-gray-50 transition-colors group">
+            <tr key={business._id} className={`hover:bg-gray-50 transition-colors group ${business.isDeleted ? 'bg-red-50 hover:bg-red-100' : ''}`}>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
                   <div>
-                    <div className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{business.businessName}</div>
+                    <div className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                        {business.businessName}
+                        {business.isDeleted && <span className="ml-2 text-xs text-red-600 font-bold">(Deleted)</span>}
+                    </div>
                     <div className="text-sm text-gray-500 flex items-center gap-1">
                          <Phone className="w-3 h-3" /> {business.phone || 'N/A'}
                     </div>
@@ -51,8 +101,30 @@ export default function BusinessTable({ businesses }) {
                   {business.isOpenNow ? 'Open' : 'Closed'}
                 </span>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                 <Link href={`/business/${business._id}`} className="text-blue-600 hover:text-blue-900 flex items-center justify-end gap-1">
+              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex items-center justify-end gap-2">
+                 {user?.role === 'admin' && (
+                      <>
+                        {business.isDeleted && (
+                            <button
+                                onClick={(e) => handleRestore(business._id, e)}
+                                disabled={actionId === business._id}
+                                className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 mr-2"
+                                title="Restore"
+                            >
+                                Restore
+                            </button>
+                        )}
+                        <button
+                            onClick={(e) => handleDelete(business._id, e)}
+                            disabled={actionId === business._id}
+                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                            title="Permanently Delete"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
+                      </>
+                 )}
+                 <Link href={`/admin/businesses/${business._id}`} className="text-blue-600 hover:text-blue-900 flex items-center justify-end gap-1 ml-2">
                     Details <ArrowRight className="w-3 h-3" />
                  </Link>
               </td>

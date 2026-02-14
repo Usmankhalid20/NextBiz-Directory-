@@ -15,7 +15,7 @@ async function getBusiness(id: string) {
         createdAt: business.createdAt.toISOString(),
         updatedAt: business.updatedAt.toISOString(),
     };
-  } catch (error) {
+  } catch {
     return null;
   }
 }

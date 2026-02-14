@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Search, Filter, SlidersHorizontal, Map as MapIcon, RotateCcw, CheckCircle } from 'lucide-react';
+import { Search, SlidersHorizontal, RotateCcw, CheckCircle } from 'lucide-react';
 
-export default function SearchFilters({ onReset, initialCategory }) {
+export default function SearchFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -25,16 +25,23 @@ export default function SearchFilters({ onReset, initialCategory }) {
     // Reset page on filter change
     params.set('page', '1');
     
-    router.push(`/?${params.toString()}`);
+    const newQueryString = params.toString();
+    // Only push if query actually changed to avoid redundant loops
+    if (newQueryString !== searchParams.toString()) {
+        router.push(`/?${newQueryString}`);
+    }
   }, [searchParams, router]);
 
   // Debounce search
   useEffect(() => {
     const timeout = setTimeout(() => {
-      handleFilterChange('search', search);
+      const currentSearch = searchParams.get('search') || '';
+      if (search !== currentSearch) {
+         handleFilterChange('search', search);
+      }
     }, 500);
     return () => clearTimeout(timeout);
-  }, [search, handleFilterChange]);
+  }, [search, handleFilterChange, searchParams]);
 
   const categories = ['All', 'Food', 'Retail', 'Service', 'Health', 'Tech', 'Other']; // Should specific dynamic later
 
@@ -43,11 +50,11 @@ export default function SearchFilters({ onReset, initialCategory }) {
       <div className="flex flex-col md:flex-row gap-4">
         {/* Search Bar */}
         <div className="flex-grow relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-800 w-5 h-5" />
           <input
             type="text"
             placeholder="Search businesses, address, or keywords..."
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-black transition-all"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -56,7 +63,7 @@ export default function SearchFilters({ onReset, initialCategory }) {
         {/* Category Dropdown */}
         <div className="md:w-48">
           <select
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white appearance-none cursor-pointer"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black appearance-none cursor-pointer"
             value={category}
             onChange={(e) => {
                 setCategory(e.target.value);
@@ -72,7 +79,7 @@ export default function SearchFilters({ onReset, initialCategory }) {
         {/* Sort Dropdown */}
         <div className="md:w-48">
              <select
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white appearance-none cursor-pointer"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black appearance-none cursor-pointer"
                 value={sort}
                 onChange={(e) => {
                     setSort(e.target.value);

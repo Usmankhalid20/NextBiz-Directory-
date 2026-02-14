@@ -1,0 +1,36 @@
+'use client';
+import Link from 'next/link';
+
+export default function PendingAccess() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Access Pending
+        </h2>
+        <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 text-center">
+            <div className="mb-4">
+                <svg className="mx-auto h-12 w-12 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+          <p className="text-gray-600 mb-6">
+            Your account is currently waiting for admin approval. You cannot access the business directory until an administrator grants you data access.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Link 
+                href="/login" 
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => {
+                    // Ideally we'd trigger logout here but a link to login is a simple start
+                    document.cookie = 'token=; Max-Age=0; path=/;';
+                }}
+            >
+              Log Out
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
