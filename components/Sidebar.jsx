@@ -16,7 +16,7 @@ export default function Sidebar() {
     { name: 'Users', href: '/admin/users', icon: Users },
     { name: 'Activity Logs', href: '/admin/activity-logs', icon: Activity },
   ];
-
+console.log(navItems)
   return (
     <div className="w-64 bg-gray-900 text-white min-h-screen flex flex-col fixed left-0 top-0">
       <div className="p-6 border-b border-gray-800">
