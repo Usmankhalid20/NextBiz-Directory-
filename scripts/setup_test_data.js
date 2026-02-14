@@ -6,13 +6,13 @@ const bcrypt = require('bcryptjs');
 // Read .env.local manually
 let MONGODB_URI;
 try {
-  const envFile = fs.readFileSync(path.join(__dirname, '../.env.local'), 'utf8');
+  const envFile = fs.readFileSync(path.join(__dirname, '../.env'), 'utf8');
   const match = envFile.match(/MONGODB_URI=(.*)/);
   if (match) {
     MONGODB_URI = match[1].trim();
   }
 } catch (e) {
-  console.log('Could not read .env.local');
+  console.log('Could not read .env');
 }
 
 if (!MONGODB_URI) {
