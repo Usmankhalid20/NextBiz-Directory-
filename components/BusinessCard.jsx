@@ -104,7 +104,7 @@ export default function BusinessCard({ business }) {
       <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
          {business.website ? (
            <a 
-             href={business.website} 
+             href={business.website.startsWith('http') ? business.website : `https://${business.website}`} 
              target="_blank" 
              rel="noopener noreferrer"
              className="text-gray-600 hover:text-blue-600 text-sm font-medium flex items-center gap-1.5"

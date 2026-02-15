@@ -53,7 +53,9 @@ export async function proxy(request: NextRequest) {
         const secret = new TextEncoder().encode(process.env.JWT_SECRET);
         const { payload } = await jwtVerify(token, secret);
         
-        // If user is NOT admin and does NOT have data access
+        // If user is NOT admin
+        // Removed hasDataAccess check as per user request
+        /* 
         if (payload.role !== 'admin' && !payload.hasDataAccess) {
              if (isApi) {
                  return NextResponse.json({ success: false, message: 'Access Pending Admin Approval' }, { status: 403 });
@@ -61,6 +63,7 @@ export async function proxy(request: NextRequest) {
                  return NextResponse.redirect(new URL('/pending-access', request.url));
              }
         }
+        */
       } catch (e) {
           // Token invalid or other error
           if (isApi) {
