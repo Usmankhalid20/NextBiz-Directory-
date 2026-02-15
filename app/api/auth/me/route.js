@@ -15,7 +15,7 @@ export async function GET(req) {
     }
 
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret_key_change_me');
     
     await connectToDatabase();
     const user = await User.findById(decoded.userId);

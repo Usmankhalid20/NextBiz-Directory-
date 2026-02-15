@@ -32,7 +32,7 @@ export async function POST(req) {
         userId: user._id, 
         role: user.role,
         hasDataAccess: user.hasDataAccess || false // Include in token, default to false
-    }, process.env.JWT_SECRET, {
+    }, process.env.JWT_SECRET || 'default_secret_key_change_me', {
       expiresIn: '7d',
     });
 
