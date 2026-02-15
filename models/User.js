@@ -28,7 +28,7 @@ const UserSchema = new mongoose.Schema({
   },
   hasDataAccess: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   createdAt: {
     type: Date,

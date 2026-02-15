@@ -124,7 +124,7 @@ export default function BusinessTable({ businesses }) {
                         </button>
                       </>
                  )}
-                 <Link href={`/admin/businesses/${business._id}`} className="text-blue-600 hover:text-blue-900 flex items-center justify-end gap-1 ml-2">
+                 <Link href={`/business/${business._id}`} className="text-blue-600 hover:text-blue-900 flex items-center justify-end gap-1 ml-2">
                     Details <ArrowRight className="w-3 h-3" />
                  </Link>
               </td>

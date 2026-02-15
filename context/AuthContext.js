@@ -46,7 +46,11 @@ export const AuthProvider = ({ children }) => {
 
     if (data.success) {
       setUser(data.user);
-      router.push('/'); // Redirect to dashboard/home
+      if (data.user.role === 'admin') {
+        router.push('/admin/dashboard');
+      } else {
+        router.push('/');
+      }
     }
     
     return data;
