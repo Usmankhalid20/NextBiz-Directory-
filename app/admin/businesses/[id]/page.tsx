@@ -12,8 +12,8 @@ async function getBusiness(id: string) {
     return {
         ...business,
         _id: business._id.toString(),
-        createdAt: business.createdAt.toISOString(),
-        updatedAt: business.updatedAt.toISOString(),
+        createdAt: typeof business.createdAt === 'string' ? business.createdAt : business.createdAt.toISOString(),
+        updatedAt: typeof business.updatedAt === 'string' ? business.updatedAt : business.updatedAt.toISOString(),
     };
   } catch {
     return null;
