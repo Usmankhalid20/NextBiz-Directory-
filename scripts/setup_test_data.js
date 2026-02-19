@@ -79,7 +79,7 @@ async function seed() {
         role: 'admin',
       },
     ];
-
+console.log(users, "users data")
     for (const u of users) {
       const exists = await User.findOne({ email: u.email });
       if (exists) {
