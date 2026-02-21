@@ -104,6 +104,9 @@ console.log(users, "users data")
     
     await Business.findOneAndUpdate({ placeId: business.placeId }, business, { upsert: true, new: true });
     console.log('Business seeded/updated');
+  let a = 10;
+  let b = 20;
+  console.log(a + b, "sum");
 
     // Get the ID
     const savedBiz = await Business.findOne({ placeId: 'test-place-id' });
